@@ -1,0 +1,36 @@
+{
+  "name": "json2raml-loader",
+  "version": "0.0.9",
+  "private": false,
+  "scripts": {
+    "test-cov": " ./node_modules/.bin/istanbul cover _mocha dist/tests/*Tests.js",
+    "test": "npm run test-cov",
+    "noValidationBuild": "rimraf dist && tsc",
+    "build": "npm run noValidationBuild"
+  },
+  "main": "./dist/src/parse.js",
+  "typings": "./dist/src/parse.d.ts",
+  "devDependencies": {
+    "typescript": "^2.0.0",
+    "dev-env-installer": "0.0.5",
+    "rimraf": "*",
+    "mocha": "^2.2.1",
+    "typedoc": "^0.3.12",
+    "chai": "^3.5.0",
+    "@types/mocha": "*",
+    "@types/chai": "*",
+    "istanbul": "^0.4.5",
+    "webpack": "^2.5.1",
+    "raml-1-parser": "^1.1.21"
+  },
+  "directories": [
+    "dist"
+  ],
+  "dependencies": {
+    "@types/node": "^6.0.55",
+    "raml-typesystem-interfaces": "^0.0.13",
+    "raml-typesystem-light": "^0.0.15",
+    "raml1-json-typings": "0.0.12",
+    "raml1-domain-model": "0.0.11"
+  }
+}

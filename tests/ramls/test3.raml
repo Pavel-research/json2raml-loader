@@ -1,0 +1,11 @@
+#%RAML 1.0
+title: Test0
+baseUri: http:/hello.com/q
+/hello:
+   /q:
+   post:
+        queryParameters:
+           x: number
+           y?: number
+        responses:
+           200:
