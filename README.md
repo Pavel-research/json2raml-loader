@@ -2,8 +2,14 @@
 
 This repository contains lighweight API on top of JSON Serialization of RAML files. It uses interfaces described in [RAML Domain Model] (https://github.com/petrochenko-pavel-a/raml-domain-model) to represent semantic of the RAML file.
 
+Comparing to using plain JSON it has following benefits:
+* Full understanding of RAML typesystem.
+* Property types are standartized, so no more null|string| string[] as property value
+* Concepts which has diferent syntax but same semantic are unified in one
 
 ### Usage:
+
+You may use it to parse RAML model which is stored in JSON:
 
 ```javascript
 import json2raml=require("json2raml-loader")
@@ -59,4 +65,11 @@ var apiJson={
 };
 var apiModel=json2raml.loadApi(apiJson);
 console.log(apiModel.resources());
+```
+
+Alternatively you may load an API using RAML parse and then wrap it to get better view on it:
+```javascript
+var rs = <rp.api10.Api>rp.loadRAMLSync("myApi.raml"), []);
+var s = rs.expand(true).toJSON({serializeMetadata: false});
+var result = json2raml.loadApi(s);
 ```
