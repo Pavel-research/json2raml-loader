@@ -73,3 +73,9 @@ var rs = <rp.api10.Api>rp.loadRAMLSync("myApi.raml"), []);
 var s = rs.expand(true).toJSON({serializeMetadata: false});
 var result = json2raml.loadApi(s);
 ```
+
+### Status 
+
+All HTTP level abstractions defined in RAML are fully supported, typesystem is supported natively using lightweight version of [RAML typesystem](https://github.com/petrochenko-pavel-a/raml-typesystem-light)
+
+Code is not well tested in productin yet, so some quirks are possible.
