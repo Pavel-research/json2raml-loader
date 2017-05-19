@@ -58,4 +58,5 @@ var apiJson={
     ]
 };
 var apiModel=json2raml.loadApi(apiJson);
+console.log(apiModel.resources());
 ```
