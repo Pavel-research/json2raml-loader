@@ -78,4 +78,4 @@ var result = json2raml.loadApi(s);
 
 All HTTP level abstractions defined in RAML are fully supported, typesystem is supported natively using lightweight version of [RAML typesystem](https://github.com/petrochenko-pavel-a/raml-typesystem-light)
 
-Code is not well tested in productin yet, so some quirks are possible.
+Code is not well tested in production yet, so some quirks are possible.
