@@ -35,6 +35,34 @@ function normalizeType(i: rjson.Type|string| string[]) {
         delete res.name;
         delete res.typePropertyKind;
         delete res.annotations;
+        delete res.structuredExample;
+        if (t.structuredExample) {
+            var e = {
+
+                value: t.structuredExample.structuredValue
+            }
+            if (t.structuredExample.annotations) {
+                Object.keys(t.structuredExample.annotations).forEach(x => {
+                    e['(' + x + ')'] = t.structuredExample.annotations[x].structuredValue;
+                });
+            }
+            res.example = e;
+        }
+        if (t.examples) {
+
+            var examples = [];
+            t.examples.forEach(e => {
+                var ex = {value: e.structuredValue};
+                if (e.annotations) {
+                    Object.keys(e.annotations).forEach(x => {
+                        ex['(' + x + ')'] = e.annotations[x].structuredValue;
+                    });
+                }
+                examples.push(ex);
+            })
+
+            res.examples = examples;
+        }
         if (t.annotations) {
             Object.keys(t.annotations).forEach(x => {
                 res['(' + x + ")"] = t.annotations[x].structuredValue;
@@ -81,7 +109,7 @@ export abstract class Proxy<JSONType extends rjson.Annotable> implements ti.IAnn
         return null;
     }
 
-    get description() {
+    description() {
         return (<any>this.json).description || (<any>this.json).usage
     }
 
@@ -193,26 +221,19 @@ export abstract class FragmentBase<T> extends Proxy<T> {
 
 }
 
-/**
- *
- */
-export class Library extends FragmentBase<rjson.Library> {
-
-    kind() {
-        return "Library";
-    }
-
-    name() {
-        return "";
-    }
-}
-
 export function mapArray<T extends Proxy<any>>(parent: Proxy<any>, property: string, clazz: {new(v: any, parent: Proxy<any>): T}): T[] {
     var obj = parent.json[property];
     if (!obj) {
         obj = [];
     }
-    return obj.map(x => new clazz(x, parent));
+    return obj.map(x => x == null ? x : new clazz(x, parent));
+}
+export function mapArrayMaps<T extends Proxy<any>>(parent: Proxy<any>, property: string, clazz: {new(v: any, parent: Proxy<any>): T}): T[] {
+    var obj = parent.json[property];
+    if (!obj) {
+        obj = [];
+    }
+    return obj.map(x => new clazz(x[Object.keys(x)[0]], parent));
 }
 export function mapMap<T extends Proxy<any>>(parent: Proxy<any>, property: string, clazz: {new(v: any, parent: Proxy<any>): T}): T[] {
     var obj = parent.json[property];
@@ -233,10 +254,83 @@ function gatherResources(r: Api|raml.Resource, res: raml.Resource[]) {
         gatherResources(x, res);
     })
 }
-export class Api extends FragmentBase<rjson.Api> implements raml.Api {
+export abstract class LibraryBase<T> extends FragmentBase<T> {
+
+    securitySchemes() {
+        return mapArrayMaps<SecuritySchemeDefinition>(this, "securitySchemes", SecuritySchemeDefinition);
+    }
+}
+export class SecuritySchemeRef extends Proxy<rjson.SecuritySchemeRef> implements raml.SecuredBy {
+
+    name() {
+        if (typeof this.json == "string") {
+            return this.json;
+        }
+        return Object.keys(this.json)[0];
+    }
+
+    settings() {
+        if (typeof this.json == "string") {
+            return {}
+        }
+        return (<any>this.json)[Object.keys(this.json)[0]];
+    }
+
+    kind() {
+        return "SecuritySchemeRef";
+    }
+
+    securitySchemes() {
+        return mapArrayMaps<SecuritySchemeDefinition>(this, "securitySchemes", SecuritySchemeDefinition);
+    }
+}
+export class Documentation extends  Proxy<rjson.DocumentationItem>{
+
+    name(){
+        return this.json.title;
+    }
+
+    title(){
+        return this.json.title;
+    }
+    content(){
+        return this.json.content;
+    }
+
+    kind(){
+        return "Documentation"
+    }
+}
+export class Api extends LibraryBase<rjson.Api> implements raml.Api {
 
     baseUri(): string {
         return this.json.baseUri;
+    }
+    protocols(){
+        return this.json.protocols;
+    }
+    mediaType(){
+        var s= this.json.mediaType
+        if (typeof s=="string"){
+            return [s];
+        }
+        else{
+            return s;
+        }
+    }
+    baseUriParameters(){
+        if (this.json.baseUriParameters) {
+            return params(this.json.baseUriParameters,this,"baseUri");
+        }
+        return []
+    }
+
+    documentation() {
+        return mapArray(this, "documentation", Documentation)
+    }
+
+    securedBy() {
+        return mapArray(this, "securedBy", SecuritySchemeRef)
     }
 
     version(): string {
@@ -387,6 +481,20 @@ export class Method extends Proxy<rjson.Method> implements raml.Method {
         return this.json.method
     }
 
+    protocols(){
+        if (this.json.protocols){
+            return this.json.protocols;
+        }
+        return []
+    }
+
+    securedBy(): raml.SecuredBy[] {
+        if (!this.json.securedBy && this.resource()) {
+            return this.resource().securedBy();
+        }
+        return mapArray(this, "securedBy", SecuritySchemeRef)
+    }
+
     kind() {
         return "Method"
     }
@@ -425,8 +533,50 @@ export class Method extends Proxy<rjson.Method> implements raml.Method {
         return null;
     }
 }
+/**
+ *
+ */
+export class Library extends LibraryBase<rjson.Library> {
+
+    usage() {
+        return this.json.usage;
+    }
+
+    kind() {
+        return "Library";
+    }
+
+    name() {
+        return "";
+    }
+}
+export class SecuritySchemeDefinition extends Proxy<rjson.SecuritySchemeDefinition> implements raml.SecuritySchemeDefinition {
+
+    settings() {
+        return this.json.settings;
+    }
+
+    type() {
+        return this.json.type;
+    }
+
+    name() {
+        return this.json.name;
+    }
+
+    kind() {
+        return "SecuritySchemeDefinition"
+    }
+}
 
 export class Resource extends Proxy<rjson.Resource> implements raml.Resource {
+
+    securedBy(): raml.SecuredBy[] {
+        if (!this.json.securedBy && this.owningApi()) {
+            return this.owningApi().securedBy();
+        }
+        return mapArray(this, "securedBy", SecuritySchemeRef)
+    }
 
     relativeUrl() {
         return this.json.relativeUri;
@@ -490,6 +640,7 @@ export function loadApi(api: rjson.Api): raml.Api {
     var collection = ts.parseJSONTypeCollection(nm);
     return new Api(api, collection);
 }
+
 export function loadLibrary(api: rjson.Library): raml.Library {
     var nm = normalize(api);
     var collection = ts.parseJSONTypeCollection(nm);

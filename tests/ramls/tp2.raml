@@ -1,0 +1,24 @@
+#%RAML 1.0 Library
+uses:
+  core: coreLib.raml
+types:
+  Type:
+    properties:
+      name:
+        type: string
+        (core.unique): true
+      description?: core.markdown
+      type:
+        type: string
+
+  Library:
+    (Hello): M1
+    properties:
+      name: string
+      types: Type[]
+
+annotationTypes:
+   Hello:
+     type: string
+
+(Hello): Max

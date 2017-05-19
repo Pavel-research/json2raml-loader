@@ -1,0 +1,15 @@
+#%RAML 1.0 Library
+uses:
+  animals: ./animals.raml
+  annotations: ./annotations.raml
+annotationTypes:
+    Hello: string
+    H2:
+     (H2):
+       name: "B"
+     properties:
+       name:
+         (H2):
+            name: "A"
+         type: string
+

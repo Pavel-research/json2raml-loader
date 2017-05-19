@@ -1,0 +1,89 @@
+#%RAML 1.0 Library
+uses:
+  core: coreLib.raml
+types:
+  HasId:
+    properties:
+      id:
+        type: integer
+        (core.key): true
+        (core.visibleWhen): false
+        (core.readonly): true
+  Base:
+    type: HasId
+    properties:
+      created_at:
+        type: datetime
+        (core.readonly): true
+      updated_at:
+        type: datetime
+        (core.readonly): true
+      body?: core.markdown
+  Label:
+    type: HasId
+    properties:
+      name: string
+  link: core.relation
+  Milestone:
+    type: HasId
+    properties:
+      number: integer
+      title: string
+  Comment:
+    type: Base
+  Organization:
+    type: HasId
+    (core.icon): avatar_url
+    properties:
+      login: string
+      description: string
+  Repository:
+    type: HasId
+    (core.icon): https://maxcdn.icons8.com/Color/PNG/24/Programming/github-24.png
+    properties:
+      name: string
+      full_name:
+        type: string
+      description: string
+  User:
+    (core.icon): avatar_url
+    (core.label): login
+    properties:
+      login: string
+  Issue:
+    type: Base
+    (core.icon): "https://maxcdn.icons8.com/office/PNG/16/Animals/bug-16.png"
+    properties:
+      number:
+        type: string
+        (core.readonly): true
+        (core.visibleWhen): false
+      title: string
+      labels:
+        type: Label[]
+        (core.reference): true
+        uniqueItems: true
+      milestone?:
+        type: Milestone
+        (core.reference): true
+      state:
+        type: string
+        enum: [ open , closed]
+      repository: Repository
+  CreateIssue:
+    properties:
+      title?: string
+      milestone?:
+        type: integer
+        (core.reference): Milestone.number
+      labels?:
+        type: string[]
+        (core.reference): Label.name
+        uniqueItems: true
+      body?: core.markdown
+  EditIssue:
+    type: CreateIssue
+    properties:
+      state?:
+        enum: [open , closed]
+        default: open

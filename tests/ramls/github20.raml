@@ -1,0 +1,98 @@
+#%RAML 1.0
+title: Github
+baseUri: https://api.github.com/
+mediaType: application/json
+uses:
+  core: coreLib2.raml
+  client: clients.raml
+  ght: githubTypes.raml
+resourceTypes:
+  list:
+    get:
+      displayName: <<resourcePathName | !uppercamelcase>>
+      (core.list):
+      (core.basicPaging): { page: page}
+      responses:
+        200:
+          body: <<ItemType>>[]
+securitySchemes:
+  basic:
+    type: Basic Authentication
+securedBy: basic
+/user/orgs:
+  type:  { list: {ItemType : ght.Organization} }
+  (core.columns): ['login']
+  (client.methodName): getUserOrgs
+/orgs/{org}:
+  (core.icon): www
+  uriParameters:
+    org:
+      (core.reference): ght.Organization.login
+  /repos:
+    (core.memberCollection): ght.Organization
+    type: {list: { ItemType: ght.Repository}}
+    (core.columns): ['name']
+  /members:
+    (core.memberCollection): ght.Organization
+    type: {list: { ItemType: ght.User}}
+    (core.columns): ['login']
+/repos/{owner}/{repo}:
+  uriParameters:
+    repo:
+      (core.reference): ght.Repository.name
+    owner:
+      (core.reference): ght.Repository.owner.login
+  /milestones:
+    (core.memberCollection): ght.Repository
+    type:  { list: {ItemType : ght.Milestone} }
+  /labels:
+    (core.memberCollection): ght.Repository
+    type:  { list: {ItemType : ght.Label} }
+  /issues:
+    get:
+      displayName: Issues
+      (core.errorMessageIn): message
+      (core.basicPaging): { page: page}
+      (core.memberCollection): ght.Repository
+      queryParameters:
+        state:
+            enum: [open, closed, all]
+            default: open
+            displayName: Issue State
+        sort:
+          enum: [comments, created, updated]
+          default: created
+          displayName: Order by
+        page: integer
+      responses:
+        200:
+          body:
+              type: ght.Issue[]
+              (core.columns):  [ title, created_at, updated_at, state ]
+    post:
+      (core.create): ght.Issue
+      displayName: Create Issue
+      body: ght.CreateIssue
+      responses:
+          200:
+            body: ght.Issue
+    /{issueNum}:
+      uriParameters:
+        issueNum:
+          type: integer
+          (core.reference): ght.Issue.number
+      patch:
+        (core.update): ght.Issue
+        body: ght.EditIssue
+        responses:
+          200:
+            body: ght.Issue
+      /comments:
+          (core.memberCollection): ght.Issue
+          type:  { list: {ItemType : ght.Comment } }
+          (core.columns): [updated_at, body ]
+(core.conversionRules):
+  MileStoneToInteger:
+    from: ght.Milestone
+    to: integer
+    selfRule: this.number

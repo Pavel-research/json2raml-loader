@@ -2,16 +2,10 @@
 uses:
   animals: ./animals.raml
   annotations: ./annotations.raml
-annotationTypes:
-    Hello: string
 types:
   HasId:
     properties:
       id: integer
-    example:
-      (Hello): H
-      value:
-         id: 2
   Items:
     properties:
         name:
@@ -41,7 +35,6 @@ types:
   Persons: Person[]
   Pet:
     type: animals.Pet
-
     properties:
       ExtraInfo: string
   Map:

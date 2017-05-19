@@ -1,0 +1,41 @@
+#%RAML 1.0 Library
+(id): http://raml.org/core.extensions
+annotationTypes:
+  disabledWhen: RAMLLocalExpression
+  visibleWhen: RAMLLocalExpression
+  requiredWhen: RAMLLocalExpression
+  typeahead: RAMLLocalExpression
+  requiredWhenMessage: string
+  enumDescriptions: string[]
+  enumValues: RAMLLocalExpression
+  create: nil
+  update: nil
+  label: string
+  readonly: boolean
+  columns:
+    type: array
+    items: string
+  errorMessage: string
+  basicPaging:
+    properties:
+       total?: RAMLResponseExpression
+       page?: RAMLRequestExpression
+       results?: RAMLResponseExpression
+
+  errorMessageIn: RAMLResponseExpression
+  icon: url
+  id: string
+  unique: boolean
+  propOrder:
+    type: string[]
+types:
+  RAMLLocalExpression: string
+  RAMLResponseExpression: string
+  RAMLRequestExpression: string
+  url: string
+  multiline:
+    type: string
+  markdown:
+      type: multiline
+  relation:
+    type: array

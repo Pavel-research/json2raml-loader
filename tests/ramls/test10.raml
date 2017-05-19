@@ -1,0 +1,29 @@
+#%RAML 1.0 Library
+uses:
+  animals: ./animals.raml
+  annotations: ./annotations.raml
+annotationTypes:
+    Hello: string
+types:
+  HasId:
+    properties:
+      id: integer
+    example:
+      (Hello): H
+      value:
+         id: 2
+  HasId2:
+    properties:
+      id: integer
+    examples:
+      f1:
+          (Hello): H
+          value:
+             id: 2
+      f2:
+         id: 2
+  HasId0:
+    properties:
+      id: integer
+    example:
+         id: 2

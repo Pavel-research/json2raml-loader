@@ -1,0 +1,88 @@
+#%RAML 1.0
+title: Github
+baseUri: https://api.github.com/
+mediaType: application/json
+uses:
+  core: coreLib.raml
+resourceTypes:
+  list:
+    get:
+      responses:
+        200:
+          body: <<ItemType>>[]
+types:
+  Base:
+    properties:
+      created_at: datetime
+      updated_at: datetime
+      body?: core.markdown
+  Comment:
+    type: Base
+    (core.label): body
+  Label:
+    properties:
+      name: string
+  link: core.relation
+  Milestone:
+    properties:
+      id: integer
+      number: integer
+      title: string
+      state:
+        enum: [open , closed]
+      due_on: datetime
+  Repository:
+  Issue:
+    type: Base
+    (core.icon): "https://maxcdn.icons8.com/office/PNG/16/Animals/bug-16.png"
+    properties:
+      title: string
+      labels:
+        type: Label[]
+      state:
+        type: string
+        enum: [ open , closed]
+      comments_url:
+        type: link
+        items: Comment
+        displayName: Comments
+securitySchemes:
+  basic:
+    type: Basic Authentication
+securedBy: basic
+/repos/{owner}/{repo}:
+  /milestones:
+    type:  { list: {ItemType : Milestone} }
+  /labels:
+    type:  { list: {ItemType : Label} }
+  /issues:
+    get:
+      (core.errorMessageIn): message
+      (core.basicPaging): { total: total_count , page: page}
+      queryParameters:
+        q:
+          type: string
+          displayName: Search Query
+          required: true
+          (core.errorMessage): Please fill search query
+          default: raml
+        sort:
+          enum: [comments, created, updated]
+          displayName: Order by
+        page: integer
+      responses:
+        200:
+          body:
+              type: Issue[]
+              (core.columns):  [ title, created_at, updated_at ]
+        400:
+          body:
+            properties:
+              message: string
+    post:
+      (core.create):
+      body: Issue
+    /{issueNum}:
+      put:
+        (core.update):
+        body: Issue
