@@ -1,6 +1,6 @@
 {
   "name": "json2raml-loader",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": false,
   "scripts": {
     "test-cov": " ./node_modules/.bin/istanbul cover _mocha dist/tests/*Tests.js",
@@ -30,7 +30,7 @@
     "@types/node": "^6.0.55",
     "raml-typesystem-interfaces": "^0.0.15",
     "raml-typesystem-light": "^0.0.16",
-    "raml1-json-typings": "0.0.18",
+    "raml1-json-typings": "0.0.19",
     "raml1-domain-model": "0.0.16"
   }
 }
