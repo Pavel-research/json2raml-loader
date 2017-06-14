@@ -89,8 +89,22 @@ function normalize(api: rjson.LibraryBase) {
     normalizeTypes(rs, api, "annotationTypes");
     return rs;
 }
-
-export abstract class Proxy<JSONType extends rjson.Annotable> implements ti.IAnnotatedElement {
+export abstract class Annotated{
+    annotation(n:string){
+        var res: ti.IAnnotation = null;
+        this.annotations().forEach(x => {
+            if (x.name() == n || x.name().endsWith("." + n)) {
+                res = x;
+            }
+        })
+        if (res) {
+            return res.value();
+        }
+        return null;
+    }
+    abstract annotations(): ti.IAnnotation[]
+}
+export abstract class Proxy<JSONType extends rjson.Annotable> extends  Annotated implements ti.IAnnotatedElement {
 
     constructor(public readonly json: JSONType, public readonly parent: Proxy<any>) {
     }
@@ -118,6 +132,7 @@ export abstract class Proxy<JSONType extends rjson.Annotable> implements ti.IAnn
     }
 
     private _annotations;
+
 
     annotations(): ti.IAnnotation[] {
         if (this._annotations) {
@@ -433,9 +448,10 @@ export class Response extends Proxy<rjson.Response> implements raml.Response {
         return "Response"
     }
 }
-export class Body implements raml.Body {
+export class Body extends Annotated implements raml.Body {
 
     constructor(private mime: string, private p: ti.IParsedType) {
+        super()
     }
 
     mimeType() {
@@ -450,9 +466,10 @@ export class Body implements raml.Body {
         return this.p.annotations();
     }
 }
-export class Parameter implements raml.Parameter {
+export class Parameter extends  Annotated implements raml.Parameter {
 
     constructor(private mime: string, private p: ti.IParsedType, private req: boolean, private loc: string) {
+        super();
     }
 
     required() {
