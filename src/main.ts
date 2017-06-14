@@ -107,6 +107,7 @@ export abstract class Annotated{
 export abstract class Proxy<JSONType extends rjson.Annotable> extends  Annotated implements ti.IAnnotatedElement {
 
     constructor(public readonly json: JSONType, public readonly parent: Proxy<any>) {
+        super();
     }
 
     abstract name();
