@@ -140,10 +140,12 @@ export abstract class Proxy<JSONType extends rjson.Annotable> extends  Annotated
             return this._annotations;
         }
         let result: Annotation[] = [];
-        Object.keys(this.json.annotations).forEach(x => {
-            var v = this.json.annotations[x];
-            result.push(new Annotation(v, this));
-        })
+        if (this.json.annotations) {
+            Object.keys(this.json.annotations).forEach(x => {
+                var v = this.json.annotations[x];
+                result.push(new Annotation(v, this));
+            })
+        }
         this._annotations = result;
         return this._annotations;
     }
