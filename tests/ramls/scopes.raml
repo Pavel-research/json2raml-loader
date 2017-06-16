@@ -1,0 +1,30 @@
+#%RAML 1.0
+title: "Person"
+mediaType: application/json
+uses:
+  core: core.raml
+types:
+  Person:
+    properties:
+      id?:
+        (core.scopes): create
+        type: integer
+      name: string
+      lastName: string
+      tasks?:
+        (core.scopes): "!list"
+        type: string[]
+/people:
+  get:
+    (core.scopes): list
+    responses:
+      200:
+        body: Person[]
+  post:
+    (core.scopes): create
+    body:  Person
+  /{id}:
+    get:
+      responses:
+        200:
+          body: Person
