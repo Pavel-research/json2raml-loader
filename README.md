@@ -73,6 +73,21 @@ var rs = <rp.api10.Api>rp.loadRAMLSync("myApi.raml"), []);
 var s = rs.expand(true).toJSON({serializeMetadata: false});
 var result = json2raml.loadApi(s);
 ```
+### Working with types
+
+One area where `json2raml-loader` shows it's strength is working with types and annotations. Being based on the native typesystem it allows you to browse through types using native typesystem capabilities:
+
+for example you can do things like this:
+
+```javascript
+var tp=loadedApi.getType("HasId");
+if (tp.isObject()){
+  allProperties=tp.properties();
+  declaredProperties=tp.properties();
+  allSuperTypes=tp.allSuperTypes();
+}
+```
+
 
 ### Status 
 
