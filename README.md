@@ -83,7 +83,7 @@ for example you can do things like this:
 var tp=loadedApi.getType("HasId");
 if (tp.isObject()){
   allProperties=tp.properties();
-  declaredProperties=tp.properties();
+  declaredProperties=tp.declaredProperties();
   allSuperTypes=tp.allSuperTypes();
 }
 ```
