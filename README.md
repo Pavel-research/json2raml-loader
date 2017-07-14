@@ -1,6 +1,6 @@
 # JSON2RAML Loader
 
-This repository contains lighweight API on top of JSON Serialization of RAML files. It uses interfaces described in [RAML Domain Model] (https://github.com/petrochenko-pavel-a/raml-domain-model) to represent semantic of the RAML file.
+This repository contains lighweight API on top of JSON Serialization of RAML files. It uses interfaces described in [RAML Domain Model](https://github.com/petrochenko-pavel-a/raml-domain-model) to represent semantic of the RAML file.
 
 Comparing to using plain JSON it has following benefits:
 * Full understanding of RAML typesystem.
@@ -83,7 +83,7 @@ for example you can do things like this:
 var tp=loadedApi.getType("HasId");
 if (tp.isObject()){
   allProperties=tp.properties();
-  declaredProperties=tp.properties();
+  declaredProperties=tp.declaredProperties();
   allSuperTypes=tp.allSuperTypes();
 }
 ```
