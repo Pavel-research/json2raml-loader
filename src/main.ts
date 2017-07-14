@@ -629,7 +629,7 @@ export class Resource extends Proxy<rjson.Resource> implements raml.Resource {
     allUriParameters() {
         let p = this.parentResource();
         if (p) {
-            return p.uriParameters().concat(this.uriParameters())
+            return p.allUriParameters().concat(this.uriParameters())
         }
         return this.uriParameters();
     }

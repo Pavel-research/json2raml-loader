@@ -1,6 +1,6 @@
 {
   "name": "json2raml-loader",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "private": false,
   "scripts": {
     "test-cov": " ./node_modules/.bin/istanbul cover _mocha dist/tests/*Tests.js",
